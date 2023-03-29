@@ -1,13 +1,21 @@
 package org.example.gui;
 
+import org.example.models.ShoppingListItem;
+import org.example.models.ShoppingListTableModel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainFrame extends JFrame {
+    private List<ShoppingListItem> items;
     public MainFrame(int witdh, int height){
         super("PRO1 2023 Projekt");
+        items = new ArrayList<>();
+        seedTestData(); // testovací data
         setSize(witdh, height);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         initGui();  // volat před setVisible
@@ -20,9 +28,12 @@ public class MainFrame extends JFrame {
         JMenu menu1 = new JMenu("Menu 1");
         bar.add(menu1);
 
-        JMenuItem item1 = new JMenuItem("Položka 1");
+        JMenuItem item1 = new JMenuItem("Nová položka");
         item1.addActionListener(e -> {
             System.out.println("Položka 1 v menu 1 clicked");
+
+            NewItemDialog dialog = new NewItemDialog(this,"Zadejte položku");
+
         });
 
 
@@ -61,6 +72,11 @@ public class MainFrame extends JFrame {
                 System.out.println("button clicked");
 
                 System.out.println("Zadáno: " + textInput.getText());
+
+                JOptionPane.showMessageDialog(null,
+                        "Zpráva pro uživatele " + textInput.getText(),
+                        "Info",
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -77,13 +93,32 @@ public class MainFrame extends JFrame {
     }
     private JPanel initCenter(){
         JPanel panel = new JPanel();
-        Object[][] data = new Object[][]{
+        /*Object[][] data = new Object[][]{
                 {"0,0", "0,1", "0,2"},
                 {"1,0", "1,1", "1,2"},
                 {"2,0", "2,1", "2,2"},
         };
         String[] colNames = new String[] {"Col1", "Col2", "Col3"};
-        panel.add(new JTable(data, colNames));
+        JTable table = new JTable(data, colNames);*/
+
+        ShoppingListTableModel tableModel = new ShoppingListTableModel(items);
+
+        JTable table = new JTable();
+        table.setModel(tableModel);
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        panel.add(scrollPane);
         return panel;
+    }
+
+    public void addItemFromDialog(){
+
+    }
+
+    private void seedTestData(){
+        items.add(new ShoppingListItem("Máslo", 50d,2));
+        items.add(new ShoppingListItem("Chléb", 31.9,1));
+        items.add(new ShoppingListItem("Šunka", 22d,3));
+        items.add(new ShoppingListItem("Sýr", 27d,1));
     }
 }
